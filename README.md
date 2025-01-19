@@ -77,7 +77,7 @@ python create_db.py
 Run the following commands to initialize Flask-Migrate:
 
 ```bash
-EXPORT FLASK_APP=app_migration.py
+export FLASK_APP=app_migration.py
 flask db init
 ```
 
