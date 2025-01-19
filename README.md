@@ -38,11 +38,11 @@ cd housing_api
 ### Step 2: Set Up Virtual Environment
 
 ```bash
-python -m venv venv
+python -m venv venv (optional)
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-### Step 3: Install Dependencies
+### Step 3: Install Dependencies (optional)
 
 ```bash
 pip install -r requirements.txt
