@@ -99,6 +99,15 @@ flask db upgrade
 
 ---
 
+#### Run app
+
+Apply the migration script to the database:
+
+```bash
+python app_migration.py
+```
+
+---
 ## API Endpoints
 
 ### GET `/houses`
