@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project demonstrates how to integrate a Python Flask web application with a PostgreSQL database using the `psycopg2` library. The application provides a simple API for managing house data in a `houses` table within the PostgreSQL database.
+This project demonstrates how to integrate a Python Flask web application with a PostgreSQL database. It includes tools for database migrations and creation using Flask-Migrate and psycopg2.
 
 ---
 
@@ -13,6 +13,7 @@ This project demonstrates how to integrate a Python Flask web application with a
 - Python
 - PostgreSQL
 - Flask
+- Flask-Migrate
 - psycopg2
 
 ### Setup
@@ -48,7 +49,7 @@ pip install -r requirements.txt
 
 ### Step 4: Configure PostgreSQL
 
-Update the PostgreSQL credentials in the `app.py` file:
+Update the PostgreSQL credentials in the `create_db.py` and `app_migration.py` files:
 
 ```python
 conn = psycopg.connect(database="postgres", user="postgres", password="your_password", host="127.0.0.1", port="5432")
@@ -60,12 +61,39 @@ Ensure the `postgres` database exists, and the user has the necessary permission
 
 ## Running the Application
 
-1. Start the PostgreSQL server.
-2. Run the Flask application:
-   ```bash
-   python app.py
-   ```
-3. Access the API at `http://127.0.0.1:5000`.
+### Step 1: Create the Database
+
+Run the `create_db.py` script to set up the `house` database:
+
+```bash
+python create_db.py
+```
+
+### Step 2: Initialize and Apply Migrations
+
+#### Initialize Migrations
+
+Run the following commands to initialize Flask-Migrate:
+
+```bash
+flask db init
+```
+
+#### Generate Migration Script
+
+Create a migration script based on your models:
+
+```bash
+flask db migrate -m "Initial migration."
+```
+
+#### Apply Migrations
+
+Apply the migration script to the database:
+
+```bash
+flask db upgrade
+```
 
 ---
 
@@ -75,7 +103,7 @@ Ensure the `postgres` database exists, and the user has the necessary permission
 
 Retrieve all house entries from the `houses` table.
 
-#### Response Exemple
+#### Response Example
 
 ```json
 [
@@ -99,7 +127,7 @@ Retrieve all house entries from the `houses` table.
 
 Add a new house entry to the `houses` table.
 
-#### Request Body Exemple
+#### Request Body Example
 
 ```json
 {
@@ -134,34 +162,6 @@ Add a new house entry to the `houses` table.
 
 ---
 
-## Testing the API
-
-### GET Example
-
-```bash
-curl http://127.0.0.1:5000/houses
-```
-
-### POST Example
-
-```bash
-curl -X POST http://127.0.0.1:5000/houses -H "Content-Type: application/json" -d '{
-  "house_id": 3,
-  "longitude": -122.24,
-  "latitude": 37.85,
-  "housing_median_age": 25,
-  "total_rooms": 1467,
-  "total_bedrooms": 190,
-  "population": 496,
-  "households": 177,
-  "median_income": 7.2574,
-  "median_house_value": 352100,
-  "ocean_proximity": "INLAND"
-}'
-```
-
----
-
 ## Troubleshooting
 
 ### Common Issues
@@ -178,3 +178,4 @@ All logs are printed to the console. Use `debug=True` in the `app.run()` method 
 ## License
 
 This project is licensed under the MIT License.
+
