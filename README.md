@@ -29,8 +29,8 @@ Before running the application, ensure you have the following:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd <repository-folder>
+git clone git@github.com:kilianMeddas/housing-Kilian-Meddas.git
+cd housing-Kilian-Meddas
 ```
 
 ### Step 2: Set Up Virtual Environment
