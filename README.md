@@ -32,6 +32,7 @@ Before running the application, ensure you have the following:
 ```bash
 git clone https://github.com/kilianMeddas/housing-Kilian-Meddas.git
 cd housing-Kilian-Meddas
+cd housing_api
 ```
 
 ### Step 2: Set Up Virtual Environment
