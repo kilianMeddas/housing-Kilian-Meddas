@@ -1,0 +1,8 @@
+docker build -t kmeddas/house_api .
+docker push kmeddas/house_api
+docker stop $(docker ps -aq)  # Stops all running containers
+docker rm $(docker ps -aq)   # Removes all containers
+docker rmi $(docker images -q) --force
+docker volume rm $(docker volume ls -q)
+docker network rm $(docker network ls -q)
+docker compose up

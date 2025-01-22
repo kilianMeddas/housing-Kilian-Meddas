@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: db
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+    ports:
+      - 5001:5432
+    networks:
+      - district
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  house_api:
+    image: kmeddas/house_api
+    #restart: always
+    container_name: house_api
+    networks:
+      - district
+    environment:
+      - POSTGRES_PASSWORD=password
+      - DB_PORT=5432
+      - FLASK_APP=app_migration.py
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:password@db:5432/house
+      # Replace password and 5432 by the value in POSTGRES_PASSWORD and DB_PORT
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+      - create_db
+
+  create_db:
+    image: kmeddas/create_database
+    container_name: create_db
+    networks:
+      - district
+    environment:
+      POSTGRES_PASSWORD: password
+      DB_PORT: 5432
+    depends_on:
+      - db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+networks:
+  district:
+
+
+volumes:
+  db_data:
