@@ -20,15 +20,29 @@ housing-Kilian-Meddas/
 |   |-- requirements.txt
 |
 |-- housing_api/
-|   |-- (Flask application files)
+|   |-- venv/
+|   |-- app.py
+|   |-- app_migration.py
+|   |-- create_db.py
+|   |-- requirements.txt
 |
 |-- housing_api_docker/
-|   |-- (Dockerized version of housing_api)
+|   |-- api/
+|       |-- Dockerfile
+|       |-- app_migration.py
+|       |-- requirements.txt
 |
+|-- create_database/
+|   |-- Dockerfile
+|   |-- create_db.py
+|   |-- requirements.txt
+|
+|-- docker-compose.yml
+|-- instru_docker
 |-- .gitignore
 |-- LICENSE
 |-- README.md
-    ```
+```
 ---
 
 ## Prerequisites
@@ -51,7 +65,7 @@ cd housing-kilian-meddas-docker
 cd housing_api
 ```
 
-### Step 2: Run Docker Compose
+### Run Docker Compose (Only for housing_api_docker)
 
 Ensure Docker and Docker Compose are installed on your machine. Then, run:
 
@@ -136,8 +150,15 @@ Add a new house entry to the `houses` table.
 - The application automatically checks for the existence of the `houses` table and the `house` database. If not found, they are created at runtime.
 - Errors during runtime are logged to the console. Enable Flask's debug mode for detailed logs.
 
----
+---------------------------
+---------------------------
+---------------------------
 
+### Docker for housing-model
+
+```docker build -t docker-ml-model -f Dockerfile .```
+
+``` docker run -v $(pwd)/output:/output docker-ml-model```
 ## Troubleshooting
 
 ### Common Issues
