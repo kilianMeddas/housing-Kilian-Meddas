@@ -7,7 +7,6 @@ RUN mkdir /output && chmod -R 777 /output
 COPY api.py .
 COPY requirements.txt . 
 COPY housing.csv .
-
 # Install dependencies
 RUN pip3 install -r requirements.txt
 
