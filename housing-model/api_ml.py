@@ -11,6 +11,11 @@ import os
 from mlflow.models import infer_signature
 import streamlit as st
 
+
+# Set MLflow tracking URI
+mlflow.set_tracking_uri(uri="http://127.0.0.1:8080")
+mlflow.set_experiment("Housing Model Experiment")
+        
 # Declaration variable for file
 st.session_state.setdefault('csv', False)
 st.session_state.setdefault('uploaded_files', None)  # Initialize with None
@@ -127,9 +132,6 @@ if st.session_state.csv:
             plt.legend()
             st.pyplot(plt)
 
-        # Set MLflow tracking URI
-        mlflow.set_tracking_uri(uri="http://127.0.0.1:8080")
-        mlflow.set_experiment("Housing Model Experiment")
 
         # Log the model and metrics in an MLflow run
         with mlflow.start_run():
