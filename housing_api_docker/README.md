@@ -71,4 +71,3 @@ After deployment, access the API at:
 http://localhost:5000/houses
 ```
 
-
