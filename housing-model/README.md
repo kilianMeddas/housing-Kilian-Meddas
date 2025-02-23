@@ -1,184 +1,86 @@
-# Flask and PostgreSQL Integration with Python
+# Housing Model
 
-## Overview
+## Description
+This project is a machine learning model that predicts housing prices based on the dataset `housing.csv`. The model is built using Python, trained with Linear Regression, and logs its performance using MLflow. Additionally, a Streamlit interface is provided for visualization and interaction.
 
-This project demonstrates how to integrate a Python Flask web application with a PostgreSQL database. It includes tools for database migrations and creation using Flask-Migrate and psycopg2.
-
----
-
-## Architecture
-
-The project is organized as follows:
-
+## Folder Structure
 ```
-housing-Kilian-Meddas/
-|
-|-- housing-model/
-|   |-- Dockerfile
-|   |-- api.py
-|   |-- housing.csv
-|   |-- requirements.txt
-|
-|-- housing_api/
-|   |-- venv/
-|   |-- app.py
-|   |-- app_migration.py
-|   |-- create_db.py
-|   |-- requirements.txt
-|
-|-- housing_api_docker/
-|   |-- api/
-|       |-- Dockerfile
-|       |-- app_migration.py
-|       |-- requirements.txt
-|
-|-- create_database/
-|   |-- Dockerfile
-|   |-- create_db.py
-|   |-- requirements.txt
-|
-|-- docker-compose.yml
-|-- instru_docker
-|-- .gitignore
-|-- LICENSE
-|-- README.md
+- housing-model/
+  - Dockerfile
+  - api_ml.py
+  - housing.csv
+  - requirements.txt
 ```
----
-
-## Prerequisites
-
-### Tools and Libraries
-
-- Docker
-- Docker Compose
-- PostgreSQL
-- Python
----
 
 ## Installation
+### Prerequisites
+Ensure you have the following installed:
+- Docker (if running in a container)
+- Python 3.11
+- Pip
+- Virtual Environment (optional but recommended)
 
-### Step 1: Clone the Repository
+### Local Setup
+1. Clone the repository:
+   ```bash
+   git clone <repo-url>
+   cd housing-model
+   ```
+2. Create and activate a virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Run the Streamlit application:
+   ```bash
+   streamlit run api_ml.py
+   ```
 
-```bash
-git clone https://github.com/kilianMeddas/housing-kilian-meddas-docker.git
-cd housing-kilian-meddas-docker
-cd housing_api
-```
+## Docker Setup
+1. Build the Docker image:
+   ```bash
+   docker build -t housing-model .
+   ```
+2. Run the container:
+   ```bash
+   docker run -p 8501:8501 housing-model
+   ```
 
-### Run Docker Compose (Only for housing_api_docker)
+## Usage
+1. Upload the `housing.csv` file in the Streamlit web interface.
+2. Explore the dataset using various visualization options.
+3. Train and evaluate the linear regression model.
+4. View model performance metrics and prediction results.
+5. Track experiments and model versions with MLflow.
+6. To view the results in MLflow, start the MLflow tracking server:
+   ```bash
+   mlflow ui --host 0.0.0.0 --port 5000
+   ```
+   Then, open your browser and go to `http://localhost:5000` to explore the logged metrics and model details.
 
-Ensure Docker and Docker Compose are installed on your machine. Then, run:
+## Files
+### `Dockerfile`
+Defines the environment setup for the Docker container, including dependencies installation and execution of `api.py`.
 
-```bash
-docker-compose up --build
-```
+### `api_ml.py`
+Main Python script that:
+- Loads and preprocesses the dataset
+- Visualizes correlations and distributions
+- Trains a Linear Regression model
+- Logs the model with MLflow
+- Provides a Streamlit UI for interaction
 
-This will build and start the services defined in the `docker-compose.yml` file, including the Flask application and PostgreSQL database.
+### `housing.csv`
+Dataset containing housing price data used for training the model.
 
----
+### `requirements.txt`
+Contains the required dependencies for the project.
 
-**For next things, you need to execute `docker exec -it house_api bash`**
+## Authors
+- Meddas Kilian
 
-## Create the table 
-
-Execute : 
-` flask db init`
-` flask db migrate -m "Create houses table"`
-` flask db upgrade`
-  `
-
-## API Endpoints
-
-### GET `/houses`
-
-Retrieve all house entries from the `houses` table.
-
-#### Response Example
-
-```json
-[
-  {
-    "house_id": 1,
-    "longitude": -122.23,
-    "latitude": 37.88,
-    "housing_median_age": 41,
-    "total_rooms": 880,
-    "total_bedrooms": 129,
-    "population": 322,
-    "households": 126,
-    "median_income": 8.3252,
-    "median_house_value": 452600,
-    "ocean_proximity": "NEAR BAY"
-  }
-]
-```
-
-### POST `/houses`
-
-Add a new house entry to the `houses` table.
-
-#### Request Body Example
-
-```json
-{
-  "house_id": 2,
-  "longitude": -122.22,
-  "latitude": 37.86,
-  "housing_median_age": 21,
-  "total_rooms": 7099,
-  "total_bedrooms": 1106,
-  "population": 2401,
-  "households": 1138,
-  "median_income": 8.3014,
-  "median_house_value": 358500,
-  "ocean_proximity": "NEAR BAY"
-}
-```
-
-#### Response
-
-```json
-{
-  "message": "House added successfully!"
-}
-```
-
----
-
-## Notes
-
-- The application automatically checks for the existence of the `houses` table and the `house` database. If not found, they are created at runtime.
-- Errors during runtime are logged to the console. Enable Flask's debug mode for detailed logs.
-
----------------------------
----------------------------
----------------------------
-
-### Docker for housing-model
-
-```docker build -t docker-ml-model -f Dockerfile .```
-
-``` docker run -v $(pwd)/output:/output docker-ml-model```
-## Troubleshooting
-
-### Common Issues
-
-- **Docker Error**: Ensure Docker and Docker Compose are installed and running.
-- **Connection Error**: Ensure PostgreSQL is correctly configured in the Docker Compose file.
-
-### Logs
-
-All logs are printed to the console. Use Docker logs to inspect issues:
-
-```bash
-docker-compose logs
-```
-
----
-
-## License
-
-This project is licensed under the MIT License.
-
-------------------------
 
