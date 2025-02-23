@@ -35,7 +35,14 @@ Ensure you have the following installed:
    ```bash
    pip install -r requirements.txt
    ```
-4. Run the Streamlit application:
+
+4. 1. Start the MLflow Tracking Server
+Before running the script, ensure that the MLflow server is running with:
+```bash
+mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 127.0.0.1 --port 8080
+```
+
+5. Run the Streamlit application:
    ```bash
    streamlit run api_ml.py
    ```
