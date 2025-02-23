@@ -1,8 +1,5 @@
 # Housing API
 
-## Overview
-Housing API is a Flask-based RESTful API for managing housing data stored in a PostgreSQL database. It provides endpoints to retrieve and insert housing records.
-
 ## Project Structure
 ```
 /housing_api
@@ -90,6 +87,5 @@ The server will run at `http://localhost:5000/`.
 - `create_db.py` ensures the database exists before running the API.
 
 ## Author
-Your Name
-
+Meddas Kilian
 
