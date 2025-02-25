@@ -1,11 +1,8 @@
 FROM python:3.11
 
-# Copy files into the container
-COPY api.py .
-COPY requirements.txt . 
-COPY housing.csv .
-# Install dependencies
-RUN pip3 install -r requirements.txt
 
-# Set the default command to run the API
+COPY api.py api_st.py requirements.txt . 
+
+RUN pip install --no-cache-dir -r requirements.txt
+
 CMD ["python", "api.py"]

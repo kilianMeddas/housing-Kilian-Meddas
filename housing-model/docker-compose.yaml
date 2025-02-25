@@ -1,0 +1,49 @@
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow
+    ports:
+      - "5001:5001"
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5001
+    networks:
+      - housing
+    volumes:
+      - mlflow-data:/mlflow
+    command: >
+      mlflow server --host 0.0.0.0 --port 5001 
+      --backend-store-uri sqlite:///mlflow.db 
+      --default-artifact-root /mlflow
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5001
+    ports:
+      - "8501:8501"
+    depends_on:
+      - mlflow
+    networks:
+      - housing
+
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - MLFLOW_TRACKING_URI=http://mlflow:5001
+    depends_on:
+      - mlflow
+    networks:
+      - housing
+
+networks:
+  housing:
+
+volumes:
+  mlflow-data:
+    driver: local
