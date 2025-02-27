@@ -1,0 +1,8 @@
+FROM python:3.11
+
+COPY producer.py .
+COPY requirements.txt . 
+
+RUN pip3 install -r requirements.txt
+
+CMD ["python", "producer.py"]

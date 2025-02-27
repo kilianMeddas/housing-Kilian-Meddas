@@ -1,0 +1,143 @@
+services:
+  broker:
+    image: confluentinc/cp-kafka:latest
+    container_name: broker
+    hostname: broker
+    ports:
+      - 9092:9092 # Internal broker port
+      - 29092:29092 # External access port
+    environment:
+      # Configures Kafka
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NODE_ID: 1 # Unique ID for the Kafka broker. # This ID is used to identify the broker internally and for communication within the cluster.
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT # This configuration maps each listener to a security protocol. In this case, all listeners are using the PLAINTEXT protocol, which means no encryption.
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:29092 # Listeners with their host/IP and port. Used for external access by clients and other brokers.
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1 # This is required to set the value to 0 when we are running with a single-node cluster. No need topic replication.
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0 # This delay helps to prevent excessive rebalancing when consumers join or leave a group, which can be particularly useful in scenarios where consumers are starting up or shutting down frequently (not in our case: set to 0).
+      KAFKA_PROCESS_ROLES: broker,controller # In KRaft mode, a Kafka node can act as both a broker and a controller. The controller role is responsible for managing the metadata and coordinating the cluster.
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:29093 # The controller quorum is a set of brokers that collectively manage the metadata for the Kafka cluster. This includes information about topics, partitions, and consumer groups. In KRaft mode, the controller quorum replaces the need for Zookeeper by using a consensus algorithm similar to Raft. Here there is only one broker.
+      KAFKA_LISTENERS: PLAINTEXT://broker:9092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:29092 # Listeners with their host/IP and port. Used for internal communication within the Kafka cluster.
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT # This defines the listener name that brokers will use to communicate with each other. It is essential for internal cluster communication.
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER # This defines the listener name that the controller will use for communication. It is essential for the controller quorum to function correctly.
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs # This configuration specifies the directory where Kafka will store its logs. It is important for the persistence and recovery of Kafka data.
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk # This ID is used to identify the cluster and ensure that metadata is correctly managed and persisted. Unique identifier for the entire Kafka cluster.
+    healthcheck:
+      test: [ CMD, kafka-broker-api-versions, --bootstrap-server, broker:9092 ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - district
+
+  # Service to see activity of kafka in web browser
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    restart: "always"
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "broker:9092"
+    depends_on:
+      - "broker"
+    networks:
+      - district
+
+  db:
+    image: postgres
+    restart: always
+    container_name: db
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+    ports:
+      - "5001:5432"
+    networks:
+      - district
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  house_api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: house_api
+    networks:
+      - district
+    environment:
+      POSTGRES_PASSWORD: password
+      DB_PORT: 5432
+      FLASK_APP: app.py
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+      - create_db
+
+  create_db:
+    image: kmeddas/create_database
+    container_name: create_db
+    networks:
+      - district
+    environment:
+      POSTGRES_PASSWORD: password
+      DB_PORT: 5432
+    depends_on:
+      - db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - district
+
+  producer:
+    restart: always
+    build:
+      context: ./producer
+      dockerfile: dockerfile
+    container_name: producer
+    depends_on:
+      - broker
+    networks:
+      - district
+
+  consumer:
+    restart: always
+    build:
+      context: ./consumer
+      dockerfile: dockerfile
+    container_name: consumer
+    depends_on:
+      - broker
+    networks:
+      - district
+
+  # ml_service:
+  #   restart: always
+  #   build: ./ml
+  #   ports:
+  #     - "5002:5001"
+  #   networks:
+  #     - district
+  #   depends_on:
+  #     - house_api
+  #     - mlflow
+
+networks:
+  district:
+
+
+volumes:
+  db_data:
